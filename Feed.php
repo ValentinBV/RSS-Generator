@@ -17,36 +17,33 @@ class Feed extends DOMDocument
     private $title;
     /** @var DomElement $item */
     private $item;
-
-    public function __construct()
+    
+    public function __construct(array $rssAttributes = [])
     {
         parent::__construct();
         $this->formatOutput = true;
         $this->encoding = 'utf-8';
         $rssElement = $this->createElement('rss');
-        $rssElement->setAttribute('version', '2.0');
-        $rssElement->setAttribute('xmlns:atom', 'http://www.w3.org/2005/Atom');
+        if ($rssAttributes) {
+            foreach ($rssAttributes as $attr => $value) {
+                $rssElement->setAttribute($attr, $value);
+            }
+        } else {
+            $rssElement->setAttribute('version', '2.0');
+            $rssElement->setAttribute('xmlns:atom', 'http://www.w3.org/2005/Atom');
+        }
         $this->rss = $this->appendChild($rssElement);
     }
-
-    public function addChannel($href = null)
+    
+    public function addChannel()
     {
         $channelElement = $this->createElement('channel');
         $this->channel = $this->rss->appendChild($channelElement);
-
-        $this->addChannelElement('atom:link', '', [
-            'href' => $href
-                ? $href
-                : $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
-            'rel' => 'self',
-            'type' => 'application/rss+xml'
-        ]);
-        $this->addChannelGenerator();
-        $this->addChannelDocs();
+        
         return $this;
     }
-
-    public function addChannelElement($element, $value, $attr = array())
+    
+    public function addChannelElement($element, $value, array $attr = [])
     {
         $element = $this->createElement($element, $this->normalizeString($value));
         foreach ($attr as $key => $value) {
@@ -55,7 +52,7 @@ class Feed extends DOMDocument
         $this->channel->appendChild($element);
         return $this;
     }
-
+    
     public function addChannelElementWithSub($element, $sub)
     {
         $element = $this->createElement($element);
@@ -66,7 +63,7 @@ class Feed extends DOMDocument
         $this->channel->appendChild($element);
         return $this;
     }
-
+    
     public function addChannelElementWithIdentSub($element, $child, $sub)
     {
         $element = $this->createElement($element);
@@ -77,70 +74,70 @@ class Feed extends DOMDocument
         $this->channel->appendChild($element);
         return $this;
     }
-
+    
     public function addChannelTitle($value)
     {
         $this->title = $value;
         return $this->addChannelElement('title', $this->title);
     }
-
+    
     public function addChannelLink($value)
     {
         return $this->addChannelElement('link', $value);
     }
-
+    
     public function addChannelDescription($value)
     {
         return $this->addChannelElement('description', $value);
     }
-
+    
     public function addChannelLanguage($value)
     {
         return $this->addChannelElement('language', $value);
     }
-
+    
     public function addChannelCopyright($value)
     {
         return $this->addChannelElement('copyright', $value);
     }
-
+    
     public function addChannelManagingEditor($value)
     {
         return $this->addChannelElement('managingEditor', $value);
     }
-
+    
     public function addChannelWebMaster($value)
     {
         return $this->addChannelElement('webMaster', $value);
     }
-
+    
     public function addChannelPubDate($value)
     {
         return $this->addChannelElement('pubDate', $this->normalizeDateTime($value));
     }
-
+    
     public function addChannelLastBuildDate($value)
     {
         return $this->addChannelElement('lastBuildDate', $this->normalizeDateTime($value));
     }
-
+    
     public function addChannelCategory($value, $domain = null)
     {
         return $domain
-            ? $this->addChannelElement('category', $value, ['domain' => $domain])
-            : $this->addChannelElement('category', $value);
+        ? $this->addChannelElement('category', $value, ['domain' => $domain])
+        : $this->addChannelElement('category', $value);
     }
-
+    
     public function addChannelGenerator()
     {
         return $this->addChannelElement('generator', 'RSS Generator ' . static::VERSION);
     }
-
+    
     public function addChannelDocs()
     {
         return $this->addChannelElement('docs', 'http://www.rssboard.org/rss-specification');
     }
-
+    
     public function addChannelCloud($domain, $port, $path, $registerProcedure, $protocol)
     {
         return $this->addChannelElement('cloud', '', [
@@ -151,12 +148,12 @@ class Feed extends DOMDocument
             'protocol' => $protocol
         ]);
     }
-
+    
     public function addChannelTtl($value)
     {
         return $this->addChannelElement('ttl', $value);
     }
-
+    
     public function addChannelImage($url, $link, $width = 88, $height = 31, $description)
     {
         if ($width < 1 || $width > 400) {
@@ -174,12 +171,12 @@ class Feed extends DOMDocument
             'description' => $description
         ]);
     }
-
+    
     public function addChannelRating($value)
     {
         return $this->addChannelElement('rating', $value);
     }
-
+    
     public function addChannelTextInput($title, $description, $name, $link)
     {
         return $this->addChannelElementWithSub('textInput', [
@@ -189,24 +186,24 @@ class Feed extends DOMDocument
             'link' => $link
         ]);
     }
-
+    
     public function addChannelSkipHours($value)
     {
         return $this->addChannelElementWithIdentSub('skipHours', 'hour', $value);
     }
-
+    
     public function addChannelSkipDays($value)
     {
         return $this->addChannelElementWithIdentSub('skipDays', 'day', $value);
     }
-
+    
     public function addItem()
     {
         $item = $this->createElement('item');
         $this->item = $this->channel->appendChild($item);
         return $this;
     }
-
+    
     public function addItemElement($element, $value, $attr = array())
     {
         $element = $this->createElement($element, $this->normalizeString($value));
@@ -234,69 +231,71 @@ class Feed extends DOMDocument
         $this->item->appendChild($element);
         return $this;
     }
-
+    
     public function addItemTitle($value)
     {
         return $this->addItemElement('title', $value);
     }
-
+    
     public function addItemLink($value)
     {
         return $this->addItemElement('link', $value);
     }
-
+    
     public function addItemDescription($value)
     {
         return $this->addItemElement('description', $value);
     }
-
+    
     public function addItemAuthor($value)
     {
         return $this->addItemElement('author', $value);
     }
-
+    
     public function addItemCategory($value, $domain = null)
     {
         return $domain
-            ? $this->addItemElement('category', $value, ['domain' => $domain])
-            : $this->addItemElement('category', $value);
+        ? $this->addItemElement('category', $value, ['domain' => $domain])
+        : $this->addItemElement('category', $value);
     }
-
+    
     public function addItemComments($value)
     {
         return $this->addItemElement('comments', $value);
     }
-
-    public function addItemEnclosure($url, $length, $type)
+    
+    public function addItemEnclosure($url, $length, $type, $showEmpty = false)
     {
-        return $this->addItemElement('enclosure', '', [
-            'url' => $url,
-            'length' => $length,
-            'type' => $type
-        ]);
+        if (!empty($url) || $showEmpty === true) {
+            return $this->addItemElement('enclosure', '', [
+                'url' => $url,
+                'length' => $length,
+                'type' => $type
+            ]);
+        }
     }
-
+    
     public function addItemGuid($value, $isPermaLink = true)
     {
         return $this->addItemElement('guid', $value, ['isPermaLink' => $isPermaLink === false ? 'false' : 'true']);
     }
-
+    
     public function addItemPubDate($value)
     {
         return $this->addItemElement('pubDate', $this->normalizeDateTime($value));
     }
-
+    
     public function addItemSource($value, $url)
     {
         return $this->addItemElement('source', $value, ['url' => $url]);
     }
-
+    
     public function __toString()
     {
         header('Content-Type: application/rss+xml; charset=utf-8');
         return $this->saveXML();
     }
-
+    
     private function normalizeDateTime($value)
     {
         if ($value instanceof DateTime) {
@@ -316,7 +315,7 @@ class Feed extends DOMDocument
         }
         return $datetime->format(DATE_RSS);
     }
-
+    
     private function normalizeString($string)
     {
         $string = html_entity_decode($string, ENT_HTML5, $this->encoding);
