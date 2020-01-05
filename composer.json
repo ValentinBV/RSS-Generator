@@ -1,14 +1,14 @@
 {
 	"name" : "zelenin/rss-generator",
 	"description" : "PHP class for generating of RSS feeds. Full support of [RSSboard specification](http://www.rssboard.org/rss-specification)",
-	"version" : "2.1.1",
+	"version" : "2.1.2",
 	"type" : "library",
 	"keywords" : [
 		"rss",
 		"feed",
 		"generator"
 	],
-	"homepage" : "https://github.com/zelenin/RSS-Generator",
+	"homepage" : "https://github.com/ValentinBV",
 	"time" : "2020-01-05",
 	"license" : "MIT",
 	"authors" : [{
@@ -16,11 +16,17 @@
 			"email" : "aleksandr@zelenin.me",
 			"homepage" : "http://zelenin.me",
 			"role" : "Developer"
+		},
+		{
+			"name": "Valentin Bondarenko",
+            "email": "bvv1988@gmail.com",
+            "homepage" : "https://github.com/ValentinBV",
+			"role" : "Developer"
 		}
 	],
 	"support" : {
-		"issues" : "https://github.com/zelenin/RSS-Generator/issues",
-		"source" : "https://github.com/zelenin/RSS-Generator"
+		"issues" : "https://github.com/ValentinBV/RSS-Generator/issues",
+		"source" : "https://github.com/ValentinBV/RSS-Generator"
 	},
 	"require" : {
 		"php" : ">=5.4.0"
